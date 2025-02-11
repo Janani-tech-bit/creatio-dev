@@ -1,0 +1,13 @@
+﻿{
+  "Descriptor": {
+    "UId": "09b1e61f-367d-4d94-adf5-f4314522d4d6",
+    "Name": "UsrRealtyVisitPage",
+    "ModifiedOnUtc": "\/Date(1739271153000)\/",
+    "Parent": {
+      "UId": "ecdcc8ff-272c-4957-9381-7d74ce17e140",
+      "Name": "BaseMiniPageTemplate"
+    },
+    "ManagerName": "ClientUnitSchemaManager",
+    "Caption": "Realty Visit modal page"
+  }
+}
