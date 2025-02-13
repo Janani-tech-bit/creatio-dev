@@ -1,4 +1,4 @@
-define("UsrRealty_FormPage", /**SCHEMA_DEPS*/[]/**SCHEMA_DEPS*/, function/**SCHEMA_ARGS*/()/**SCHEMA_ARGS*/ {
+define("UsrRealty_FormPage", /**SCHEMA_DEPS*/["@creatio-devkit/common"]/**SCHEMA_DEPS*/, function/**SCHEMA_ARGS*/(sdk)/**SCHEMA_ARGS*/ {
 	return {
 		viewConfigDiff: /**SCHEMA_VIEW_CONFIG_DIFF*/[
 			{
@@ -602,6 +602,23 @@ define("UsrRealty_FormPage", /**SCHEMA_DEPS*/[]/**SCHEMA_DEPS*/, function/**SCHE
 				"parentName": "VisitsGridDetail",
 				"propertyName": "bulkActions",
 				"index": 3
+			},
+			{
+				"operation": "insert",
+				"name": "CommentRequired",
+				"values": {
+					"type": "crt.Checkbox",
+					"label": "$Resources.Strings.PDS_UsrColumn8_9jp6omq",
+					"labelPosition": "auto",
+					"control": "$PDS_UsrColumn8_9jp6omq",
+					"visible": false,
+					"readonly": true,
+					"placeholder": "",
+					"tooltip": ""
+				},
+				"parentName": "GeneralInfoTab",
+				"propertyName": "items",
+				"index": 4
 			}
 		]/**SCHEMA_VIEW_CONFIG_DIFF*/,
 		viewModelConfigDiff: /**SCHEMA_VIEW_MODEL_CONFIG_DIFF*/[
@@ -657,16 +674,8 @@ define("UsrRealty_FormPage", /**SCHEMA_DEPS*/[]/**SCHEMA_DEPS*/, function/**SCHE
 					"PDS_UsrComments_zfp2jh4": {
 						"modelConfig": {
 							"path": "PDS.UsrComments"
-						},
-						"validators": {
-							"required": {
-								"type": "crt.Required",
-								"params": {
-									"Comment Required": 1,
-									"message": "#ResourceString(CommentRequired)#"
-								}
-							}
 						}
+						
 					},
 					"PDS_UsrCommission_cjsem22": {
 						"modelConfig": {
@@ -730,6 +739,11 @@ define("UsrRealty_FormPage", /**SCHEMA_DEPS*/[]/**SCHEMA_DEPS*/, function/**SCHE
 									}
 								}
 							}
+						}
+					},
+					"PDS_UsrColumn8_9jp6omq": {
+						"modelConfig": {
+							"path": "PDS.UsrColumn8"
 						}
 					}
 				}
@@ -830,20 +844,25 @@ define("UsrRealty_FormPage", /**SCHEMA_DEPS*/[]/**SCHEMA_DEPS*/, function/**SCHE
         /* The custom implementation of the system request handler. */
         handler: async (request, next) => {
             /* Check the request status. */
-            if (request.attributeName === 'PDS_UsrPrice_ltmp28n'){
-    
-                var price = await request.$PDS_UsrPrice_ltmp28n;
-				
-                /* Check the request description. */
-                if (price > 5000) 
-				 {
-                    /* If the request status is "greater than syssettingvalue 5000," apply the validator to the "PDS_UsrComments_zfp2jh4" attribute. */
-                    request.$context.enableAttributeValidator('PDS_UsrComments_zfp2jh4', 'required');
-                } else {
-                    /* If the request status is less than syssettingvalue 5000," do not apply the validator to the "PDS_UsrComments_zfp2jh4" attribute. */
-                    request.$context.disableAttributeValidator('PDS_UsrComments_zfp2jh4', 'required');
-                }
-	         }
+            if (request.attributeName === "PDS_UsrPrice_ltmp28n") 
+				{
+					var price = await request.$context.PDS_UsrPrice_ltmp28n;
+	                const sysSettingsService = new sdk.SysSettingsService();
+						
+				     var MinPriceToRequireRealtyComment = await        
+					sysSettingsService.getByCode('MinPriceToRequireRealtyComment');
+						
+				var minPrice = MinPriceToRequireRealtyComment.value;
+						
+			 if (price > minPrice) {
+					
+				 request.$context.PDS_UsrColumn8_9jp6omq = true;
+						
+				 } else {
+		
+				 request.$context.PDS_UsrColumn8_9jp6omq = false;
+						}
+					}
             /* Call the next handler if it exists and return its result. */
             return next?.handle(request);
 	
